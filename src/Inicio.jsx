@@ -1,4 +1,4 @@
-import * as React from 'react';
+import  React, { useContext, useEffect } from 'react';
 import { createTheme, ThemeProvider, alpha } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
@@ -8,12 +8,52 @@ import Header from './componentsi/parte_superior';
 import MainGrid from './componentsi/grid_pagina';
 import SideMenu from './componentsI/grid_menu';
 import getDashboardTheme from './theme/getDashboardTheme';
+import { UserContext } from './provider/global.jsx';
 
 export default function Inicio() {
   const [mode, setMode] = React.useState('light');
   const [showCustomTheme, setShowCustomTheme] = React.useState(true);
   const dashboardTheme = createTheme(getDashboardTheme(mode));
   const defaultTheme = createTheme({ palette: { mode } });
+  const { userId,  } = useContext(UserContext);
+  const token = sessionStorage.getItem('userToken');
+  const id = sessionStorage.getItem('user');
+  const correo = sessionStorage.getItem('user');
+
+  console.log(id);
+  console.log(token);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!token || !id) return; // Asegúrate de que el token y el ID existan
+
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/users/${id}/`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Error al obtener los datos del usuario');
+        }else{
+          console.log(response)
+          console.log('devuelve')
+        }
+
+        const data = await response.json();
+        setUserData(data); // Almacena la respuesta en el estado
+      } catch (err) {
+        setError(err.message);
+        console.error('Error:', err);
+      }
+    };
+
+    fetchUserData();
+  }, []); // Dependencias para el useEffect
+
+
   // This code only runs on the client side, to determine the system color preference
   React.useEffect(() => {
     // Check if there is a preferred mode in localStorage
@@ -38,6 +78,8 @@ export default function Inicio() {
   const toggleCustomTheme = () => {
     setShowCustomTheme((prev) => !prev);
   };
+
+
 
   return (
     

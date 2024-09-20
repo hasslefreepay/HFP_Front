@@ -124,7 +124,10 @@ export default function SignIn() {
         }else{
           setSuccess('Inicio de sesión exitoso.');
           setError('');
-          console.log('entro')
+          console.log('entro');
+          sessionStorage.setItem('userToken', users.access_token);
+          sessionStorage.setItem('user', users.id);
+          sessionStorage.setItem('correo', data.get('email') );
           setPasswordError(false);
           setPasswordErrorMessage('');
           navigate('/Inicio');

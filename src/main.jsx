@@ -10,9 +10,11 @@ import {BrowserRouter, Route, Routes } from 'react-router-dom'
 import SignIn from './SignIn.jsx'
 import Inicio from './Inicio.jsx';
 import Registro from './registro2.jsx';
+import { UserProvider } from './provider/global.jsx';
 
 
 createRoot(document.getElementById('root')).render(
+  <UserProvider>
   <StrictMode>
     <BrowserRouter>
     <Routes>
@@ -24,5 +26,6 @@ createRoot(document.getElementById('root')).render(
     </Routes>
     </BrowserRouter>
     
-  </StrictMode>,
+  </StrictMode>
+  </UserProvider>,
 )

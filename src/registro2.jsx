@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { createTheme,ThemeProvider } from '@mui/material/styles';
 import Grid from '@mui/material/Grid2';
 import getCheckoutTheme from './theme/getCheckoutTheme';
@@ -12,6 +12,7 @@ import { Button } from '@mui/material';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
+import { UserContext } from './provider/global.jsx';
 
 
 const FormGrid = styled(Grid)(() => ({
@@ -27,6 +28,8 @@ export default function Registro() {
   const checkoutTheme = createTheme(getCheckoutTheme(mode));
   const defaultTheme = createTheme({ palette: { mode } });
   const navigate = useNavigate();
+  const { setUserId, userId , setUserToken} = useContext(UserContext);
+  
 
 
   const [formData, setFormData] = useState({
@@ -102,7 +105,35 @@ export default function Registro() {
       const result = await response.json();
       console.log('Respuesta de la API:', result);
       if(response.ok){
-        navigate('/Inicio');
+
+        try {
+          // Realiza una solicitud para obtener el usuario por correo electrónico
+          const response = await fetch(`http://127.0.0.1:8000/api/validate_user/?correo=${data.get('email')}&contraseña=${data.get('password')}`);
+          const users = await response.json();
+          console.log(users)
+          console.log('Tokens almacenados:', users.access_token, users.refresh_token);
+
+          if (users.exists==true) {
+            sessionStorage.setItem('userToken', users.access_token);
+            sessionStorage.setItem('user', users.id);
+            setUserToken(users.access_token);
+            setUserId(result.id);
+            console.log('este es el id', userId);
+            navigate('/Inicio');
+          return;
+        }
+  
+        
+        
+
+          
+        } catch (error) {
+          console.error('Error:', error);
+          setError('Hubo un error al iniciar sesión.');
+          setSuccess('');
+        }
+
+        
       }
       
     } catch (error) {
